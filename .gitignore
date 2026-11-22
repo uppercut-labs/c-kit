@@ -1,0 +1,8 @@
+dist/
+build/
+build-*/
+*.tar.gz
+__pycache__/
+.DS_Store
+.env*
+*.pem

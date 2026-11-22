@@ -1,0 +1,11 @@
+# gitleaks settings for tools/release_gate.py. The default rules apply; build and pack output is not this
+# repository's files (the gate scans the packed source tarball separately).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Pack and build output, not repository content"
+paths = [
+  '''(^|[\/])dist[\/]''',
+  '''(^|[\/])build[^\/]*[\/]''',
+]
