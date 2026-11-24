@@ -1,8 +1,8 @@
 # The kit's full check on Windows (PowerShell 5.1 or 7): for every package under packages\ that has a
 # CMakeLists.txt, configure, build and run its tests, then build its example consumer against the package's own source.
-# Needs CMake, Ninja, a C compiler, Python 3 and whatever a package's README lists (SDL3 for the input packages).
+# Needs CMake, Ninja, a C compiler, Python 3 and whatever a package's README lists.
 #
-#   .\tools\check.ps1 [-Compiler clang] [-Prefix <install prefix for dependencies such as SDL3>]
+#   .\tools\check.ps1 [-Compiler clang] [-Prefix <install prefix for dependencies>]
 #
 # Build output goes to build\<package>\ in this checkout.
 param(
