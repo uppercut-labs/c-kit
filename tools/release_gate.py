@@ -8,7 +8,7 @@ Commit author and committer emails must be listed in RELEASE_GATE_ALLOWED_EMAILS
 
 Usage:
   python tools/release_gate.py                       # working tree + git history + commit metadata
-  python tools/release_gate.py --artifact dist/port-input-harness-0.1.0.tar.gz   # a source tarball (.tar.gz or .zip)
+  python tools/release_gate.py --artifact dist/<name>-<version>.tar.gz   # a source tarball (.tar.gz or .zip)
 Exit code 0 means clean; 1 means a hit; 2 means the gate could not run.
 """
 from __future__ import annotations
