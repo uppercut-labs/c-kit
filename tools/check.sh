@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# The kit's full check on macOS and Linux (Bash or zsh): for every package under packages/, configure, build and run its
-# tests, then build the example consumer project against the package's own source. Needs CMake, Ninja, a C compiler,
-# SDL3 and Python 3.
+# The kit's full check on macOS and Linux (Bash or zsh): for every package under packages/ that has a
+# CMakeLists.txt, configure, build and run its tests, then build its example consumer against the package's own source.
+# Needs CMake, Ninja, a C compiler, Python 3 and whatever a package's README lists.
 #
-#   ./tools/check.sh [SDL3 install prefix]
+#   ./tools/check.sh [install prefix for dependencies]
 #
 # Build output goes to build/<package>/ in this checkout.
 set -euo pipefail
@@ -11,8 +11,11 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 prefix="${1:-}"
 extra=()
 [ -n "$prefix" ] && extra+=("-DCMAKE_PREFIX_PATH=$prefix")
+shopt -s nullglob
 for pkg in "$root"/packages/*/; do
+  [ -f "$pkg/CMakeLists.txt" ] || continue
   name="$(basename "$pkg")"
+  var="FETCHCONTENT_SOURCE_DIR_$(echo "$name" | tr '[:lower:]-' '[:upper:]_')"
   echo "== $name"
   cmake -S "$pkg" -B "$root/build/$name" -G Ninja -DCMAKE_BUILD_TYPE=Release ${extra[@]+"${extra[@]}"}
   cmake --build "$root/build/$name"
@@ -20,7 +23,7 @@ for pkg in "$root"/packages/*/; do
   if [ -f "$pkg/examples/consumer/CMakeLists.txt" ]; then
     echo "== $name: the example consumer"
     cmake -S "$pkg/examples/consumer" -B "$root/build/$name-consumer" -G Ninja -DCMAKE_BUILD_TYPE=Release \
-      "-DFETCHCONTENT_SOURCE_DIR_PORT_INPUT_HARNESS=$root" ${extra[@]+"${extra[@]}"}
+      "-D$var=$root" ${extra[@]+"${extra[@]}"}
     cmake --build "$root/build/$name-consumer"
     ctest --test-dir "$root/build/$name-consumer" --output-on-failure
   fi

@@ -2,33 +2,33 @@
 
 Small, focused C libraries from Uppercut Labs. Each package is a folder that builds on its own with CMake and is taken into a project at a release tag. C libraries have no package index, so there is nothing to publish: a release is a git tag.
 
-| Package | What it does |
-| --- | --- |
-| [`port-input-harness`](packages/port-input-harness) | Tests a game port's controller handling with SDL3 virtual controllers (DualSense, Xbox, Switch Pro, Steam Deck, generic pads and more as data files), with hot-plug, scripts, a pass/fail runner and an end-to-end runner |
+There are no packages here right now. The first one, `port-input-harness`, moved to [game-kit](https://github.com/uppercut-labs/game-kit) on 2026-11-24 with the other game development packages, so this repo stays for general-purpose C.
 
-## Using a package
-
-Fetch it at a tag with CMake `FetchContent`, or vendor the folder and `add_subdirectory` it. Each package README has the exact lines and an example project.
+Its `port-input-harness@0.1.0` tag stays in this repository, so a project already pinned to it keeps building. New versions are tagged in game-kit:
 
 ```cmake
 include(FetchContent)
 FetchContent_Declare(port_input_harness
-  GIT_REPOSITORY https://github.com/uppercut-labs/c-kit.git
-  GIT_TAG        port-input-harness@0.1.0
+  GIT_REPOSITORY https://github.com/uppercut-labs/game-kit.git
+  GIT_TAG        port-input-harness@<version>
   GIT_SHALLOW    TRUE
   SOURCE_SUBDIR  packages/port-input-harness)
 FetchContent_MakeAvailable(port_input_harness)
 ```
 
+## Using a package
+
+Fetch it at a tag with CMake `FetchContent`, or vendor the folder and `add_subdirectory` it. Each package README has the exact lines and an example project.
+
 ## Working in this repo
 
-You need CMake 3.20 or later, Ninja, a C11 compiler, Python 3.8 or later and whatever the package lists (the harness needs SDL3 3.2 or later). The full check builds every package, runs its tests, and builds each package's example consumer:
+You need CMake 3.20 or later, Ninja, a C11 compiler, Python 3.8 or later and whatever a package lists. The full check builds every package, runs its tests, and builds each package's example consumer:
 
 | System | Command | Shell |
 | --- | --- | --- |
-| Windows | `.\tools\check.ps1` | PowerShell 5.1 or 7 (with MSYS2 UCRT64 on `PATH`: `C:\msys64\ucrt64\bin`, packages `mingw-w64-ucrt-x86_64-{clang,cmake,ninja,SDL3}`) |
-| macOS | `./tools/check.sh` | Bash or zsh (`brew install sdl3 cmake ninja`) |
-| Linux | `./tools/check.sh` | Bash (`apt install cmake ninja-build gcc libsdl3-dev python3`; SDL3 is in Debian 13 and later) |
+| Windows | `.\tools\check.ps1` | PowerShell 5.1 or 7 (with MSYS2 UCRT64 on `PATH`: `C:\msys64\ucrt64\bin`, packages `mingw-w64-ucrt-x86_64-{clang,cmake,ninja}`) |
+| macOS | `./tools/check.sh` | Bash or zsh (`brew install cmake ninja`) |
+| Linux | `./tools/check.sh` | Bash (`apt install cmake ninja-build gcc python3`) |
 
 Each package lives in `packages/<name>` with its own `CMakeLists.txt`, README, licence, tests, examples and docs. Packages have no dependencies on each other unless their README says so. A package's tests must run without a display, a GPU or hardware, so they run in a plain container.
 

@@ -1,18 +1,18 @@
-# The kit's full check on Windows (PowerShell 5.1 or 7): for every package under packages/, configure, build and run its
-# tests, then build the example consumer project against the package's own source. Needs CMake, Ninja, a C compiler,
-# SDL3 and Python 3. On a machine with MSYS2 that is C:\msys64\ucrt64\bin first on PATH.
+# The kit's full check on Windows (PowerShell 5.1 or 7): for every package under packages\ that has a
+# CMakeLists.txt, configure, build and run its tests, then build its example consumer against the package's own source.
+# Needs CMake, Ninja, a C compiler, Python 3 and whatever a package's README lists.
 #
-#   .\tools\check.ps1 [-Compiler clang] [-SdlPrefix <SDL3 install prefix>]
+#   .\tools\check.ps1 [-Compiler clang] [-Prefix <install prefix for dependencies>]
 #
 # Build output goes to build\<package>\ in this checkout.
 param(
     [string]$Compiler = "clang",
-    [string]$SdlPrefix = ""
+    [string]$Prefix = ""
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $common = @("-G", "Ninja", "-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_C_COMPILER=$Compiler")
-if ($SdlPrefix) { $common += "-DCMAKE_PREFIX_PATH=$SdlPrefix" }
+if ($Prefix) { $common += "-DCMAKE_PREFIX_PATH=$Prefix" }
 
 function Invoke-Native {
     param([string]$Exe, [string[]]$Arguments)
@@ -20,8 +20,12 @@ function Invoke-Native {
     if ($LASTEXITCODE) { throw "$Exe failed with exit code $LASTEXITCODE" }
 }
 
-foreach ($pkg in Get-ChildItem -Path (Join-Path $root "packages") -Directory) {
+$packages = Join-Path $root "packages"
+if (-not (Test-Path $packages)) { Write-Host "check: no packages"; exit 0 }
+foreach ($pkg in Get-ChildItem -Path $packages -Directory) {
+    if (-not (Test-Path (Join-Path $pkg.FullName "CMakeLists.txt"))) { continue }
     $name = $pkg.Name
+    $var = "FETCHCONTENT_SOURCE_DIR_" + $name.ToUpperInvariant().Replace("-", "_")
     $build = Join-Path $root "build\$name"
     Write-Host "== $name"
     Invoke-Native cmake (@("-S", $pkg.FullName, "-B", $build) + $common)
@@ -31,7 +35,7 @@ foreach ($pkg in Get-ChildItem -Path (Join-Path $root "packages") -Directory) {
     if (Test-Path (Join-Path $consumer "CMakeLists.txt")) {
         Write-Host "== ${name}: the example consumer"
         $cbuild = Join-Path $root "build\$name-consumer"
-        Invoke-Native cmake (@("-S", $consumer, "-B", $cbuild, "-DFETCHCONTENT_SOURCE_DIR_PORT_INPUT_HARNESS=$root") + $common)
+        Invoke-Native cmake (@("-S", $consumer, "-B", $cbuild, "-D$var=$root") + $common)
         Invoke-Native cmake @("--build", $cbuild)
         Invoke-Native ctest @("--test-dir", $cbuild, "--output-on-failure")
     }

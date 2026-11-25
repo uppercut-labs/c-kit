@@ -6,7 +6,7 @@ C libraries are not uploaded to a package index. A release is a tag `<name>@<ver
 
 Everything below runs in PowerShell on Windows or Bash on macOS and Linux, except the gate, which is Python 3 and runs the same everywhere. The commands are written once because `git`, `python` and `gh` take the same arguments in both shells; where a line differs, both are shown.
 
-1. Bump the version in `packages/<name>/include/<header>.h` (for `port-input-harness`, `PIH_VERSION` in `include/pih/pih.h`; CMake reads it from there), in the package README (its install snippet's `GIT_TAG`, its tested-systems table) and in `examples/consumer/CMakeLists.txt`. Commit.
+1. Bump the version in `packages/<name>/include/<header>.h`, in the package README (its install snippet's `GIT_TAG`, its tested-systems table) and in `examples/consumer/CMakeLists.txt`. Commit.
 2. Run the full check, which builds each package, runs its tests and builds the example consumer:
 
    ```powershell
