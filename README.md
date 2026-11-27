@@ -2,9 +2,9 @@
 
 Small, focused C libraries from Uppercut Labs. Each package is a folder that builds on its own with CMake and is taken into a project at a release tag. C libraries have no package index, so there is nothing to publish: a release is a git tag.
 
-There are no packages here right now. The first one, `port-input-harness`, moved to [game-kit](https://github.com/uppercut-labs/game-kit) on 2026-11-24 with the other game development packages, so this repo stays for general-purpose C.
+Uppercut Labs' C libraries are all game and port libraries, so they ship in [game-kit](https://github.com/uppercut-labs/game-kit) at version 1.0.0: `bitmap-font`, `det-core`, `gba-tile-ui`, `kos-naomi-cabinet`, `libretro-guest-probe`, `minimal-png`, `pad-replay`, `port-input-harness`, `port-sdl-input`, `port-settings`, `ps2-multitap-pads`, `save-block` and `sgdk-host-stub`. This repository holds the shared C tooling (the check scripts and the release gate) and takes general-purpose C libraries that are not about games.
 
-Its `port-input-harness@0.1.0` tag stays in this repository, so a project already pinned to it keeps building. New versions are tagged in game-kit:
+`port-input-harness@0.1.0`, its first release, was tagged here and that tag stays, so a project pinned to it keeps building. Its releases from 1.0.0 on are tagged in game-kit:
 
 ```cmake
 include(FetchContent)
